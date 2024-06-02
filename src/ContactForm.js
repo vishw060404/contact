@@ -1,25 +1,24 @@
-// ContactForm.js
 import React, { useState, useEffect } from 'react';
 
-function ContactForm({ addContact, editContact, editingContact }) {
+const ContactForm = ({ addContact, editContact, contactToEdit }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
 
   useEffect(() => {
-    if (editingContact) {
-      setName(editingContact.name);
-      setEmail(editingContact.email);
-      setPhone(editingContact.phone);
+    if (contactToEdit) {
+      setName(contactToEdit.name);
+      setEmail(contactToEdit.email);
+      setPhone(contactToEdit.phone);
     }
-  }, [editingContact]);
+  }, [contactToEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (editingContact) {
-      editContact({ ...editingContact, name, email, phone });
+    if (contactToEdit) {
+      editContact({ ...contactToEdit, name, email, phone });
     } else {
-      addContact({ id: Date.now(), name, email, phone });
+      addContact({ name, email, phone });
     }
     setName('');
     setEmail('');
@@ -27,31 +26,34 @@ function ContactForm({ addContact, editContact, editingContact }) {
   };
 
   return (
-    <div id='in'>
-      <h2 id='head2'>{editingContact ? 'Edit Contact' : 'Add Contact'}</h2>
-      <form onSubmit={handleSubmit} id='form'>
-        <input id='box'
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input id='box'
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input id='box'
-          type="tel"
-          placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <button id='bt'  type="submit">{editingContact ? 'Save' : 'Add'}</button>
-      </form>
+    <div id='total'>
+    <form onSubmit={handleSubmit} id='form'>
+      <h3 id='head2'>Contact</h3>
+      <input id='box'
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
+      <input  id='box'
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input id='box'
+        type="text"
+        placeholder="Phone"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        required
+      />
+      <button id='bt' type="submit">{contactToEdit ? 'Update' : 'Add'} Contact</button>
+    </form>
     </div>
   );
-}
+};
 
 export default ContactForm;

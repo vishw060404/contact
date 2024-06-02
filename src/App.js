@@ -1,41 +1,61 @@
-// App.js
-import React, { useState } from 'react';
-import ContactList from './ContactList';
+import React, { useState, useEffect } from 'react';
 import ContactForm from './ContactForm';
-import './style.css';
+import ContactList from './ContactList';
+import './App.css';
 
-function App() {
+const App = () => {
   const [contacts, setContacts] = useState([]);
-  const [editingContact, setEditingContact] = useState(null);
+  const [contactToEdit, setContactToEdit] = useState(null);
 
-  const addContact = (newContact) => {
-    setContacts([...contacts, newContact]);
+  // Load contacts from local storage on component mount
+  useEffect(() => {
+    const storedContacts = JSON.parse(localStorage.getItem('contacts'));
+    if (storedContacts) {
+      setContacts(storedContacts);
+    }
+  }, []);
+
+  // Save contacts to local storage whenever contacts state changes
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  const addContact = (contact) => {
+    setContacts([...contacts, contact]);
   };
 
-  const editContact = (editedContact) => {
-    setContacts(contacts.map(contact => (contact.id === editedContact.id ? editedContact : contact)));
-    setEditingContact(null);
+  const editContact = (updatedContact) => {
+    const updatedContacts = contacts.map((contact) =>
+      contact === contactToEdit ? updatedContact : contact
+    );
+    setContacts(updatedContacts);
+    setContactToEdit(null);
   };
 
-  const deleteContact = (contactId) => {
-    setContacts(contacts.filter(contact => contact.id !== contactId));
+  const handleEditContact = (contact) => {
+    setContactToEdit(contact);
+  };
+
+  const deleteContact = (index) => {
+    const updatedContacts = contacts.filter((_, i) => i !== index);
+    setContacts(updatedContacts);
   };
 
   return (
-    <div>
-      <h1 id='head'>Contact Management Software</h1>
+    <div className="App">
+      <h1 id='head'>Contact Management System</h1>
       <ContactForm
         addContact={addContact}
         editContact={editContact}
-        editingContact={editingContact}
+        contactToEdit={contactToEdit}
       />
-<ContactList
-  contacts={contacts}
-  onEdit={setEditingContact}
-  onDelete={deleteContact}
-/>
+      <ContactList
+        contacts={contacts}
+        editContact={handleEditContact}
+        deleteContact={deleteContact}
+      />
     </div>
   );
-}
+};
 
 export default App;
